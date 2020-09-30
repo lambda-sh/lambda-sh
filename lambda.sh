@@ -279,3 +279,13 @@ LAMBDA_COMPILE_ARGS() {
     fi
   done
 }
+
+# -------------------------------- ASSERTIONS ----------------------------------
+
+# Asserts whether or not the last ran command has succeeded. Expects one 
+# argument that should be the message output if the assertion has failed.
+LAMBDA_ASSERT_LAST_COMMAND_OK() {
+    if [ $? -ne 0 ]; then
+        LAMBDA_FATAL "$1"
+    fi
+}
