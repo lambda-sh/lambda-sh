@@ -23,6 +23,11 @@ __LAMBDA_COLOR_WHITE=7
 __LAMBDA_COLOR_NOT_USED=8
 __LAMBDA_COLOR_DEFAULT=9
 
+# Converts tput to a no-op if term isn't set.
+if [ -z ${TERM} ]; then
+    alias tput=":"
+fi
+
 # Make output bold.
 __LAMBDA_SET_BOLD() {
     tput bold
