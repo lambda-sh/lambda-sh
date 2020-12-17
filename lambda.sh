@@ -23,58 +23,83 @@ __LAMBDA_COLOR_WHITE=7
 __LAMBDA_COLOR_NOT_USED=8
 __LAMBDA_COLOR_DEFAULT=9
 
-if test ! -n "${TERM-}"; then
-    TERM="xterm"
-fi
+# Checks if the term variable is set.
+__LAMBDA_TERM_IS_SET() {
+    if test -n "${TERM}"; then
+        return true
+    else
+        return false
+    fi
+}
 
 # Make output bold.
 __LAMBDA_SET_BOLD() {
-    tput bold
+    if __LAMBDA_TERM_IS_SET; then
+        tput bold
+    fi
 }
 
 # Make output underlined.
 __LAMBDA_SET_UNDERLINE() {
-    tput smul
+    if __LAMBDA_TERM_IS_SET; then
+        tput smul
+    fi
 }
 
 # Make the output blink.
 __LAMBDA_SET_BLINK() {
-    tput blink
+    if __LAMBDA_TERM_IS_SET; then
+        tput blink
+    fi
 }
 
 # Make the output standout.
 __LAMBDA_SET_STANDOUT() {
-    tput blink
+    if __LAMBDA_TERM_IS_SET; then
+        tput blink
+    fi
 }
 
 # Clear all attributes.
 __LAMBDA_CLEAR_ATTRIBUTES() {
-    tput sgr0
+    if __LAMBDA_TERM_IS_SET; then
+        tput sgr0
+    fi
 }
 
 # Set the foreground color.
 __LAMBDA_SET_FOREGROUND() {
-    tput setaf $1
+    if __LAMBDA_TERM_IS_SET; then
+        tput setaf $1
+    fi
 }
 
 # Reset the foreground to it's default.
 __LAMBDA_CLEAR_FOREGROUND() {
-    tput setaf $__LAMBDA_COLOR_DEFAULT
+    if __LAMBDA_TERM_IS_SET; then
+        tput setaf $__LAMBDA_COLOR_DEFAULT
+    fi
 }
 
 # Set the background color.
 __LAMBDA_SET_BACKGROUND() {
-    tput setab $1
+    if __LAMBDA_TERM_IS_SET; then
+        tput setab $1
+    fi
 }
 
 # Clear the background.
 __LAMBDA_CLEAR_BACKGROUND() {
-    tput setab $__LAMBDA_COLOR_NOT_USED
+    if __LAMBDA_TERM_IS_SET; then
+        tput setab $__LAMBDA_COLOR_NOT_USED
+    fi
 }
 
 # Clear the entire screen.
 __LAMBDA_CLEAR_SCREEN() {
-    tput clear
+    if __LAMBDA_TERM_IS_SET; then
+        tput clear
+    fi
 }
 
 # --------------------------------- TYPES ------------------------------------
