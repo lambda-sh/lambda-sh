@@ -25,7 +25,7 @@ __LAMBDA_COLOR_DEFAULT=9
 
 # Checks if the term variable is set.
 __LAMBDA_TERM_IS_SET() {
-    if test -n "${TERM}"; then
+    if [[ -z ${TERM} ]]; then
         return 1
     else
         return 0
