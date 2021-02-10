@@ -33,70 +33,70 @@ __LAMBDA_TERM_IS_SET() {
 }
 
 # Make output bold.
-__LAMBDA_SET_BOLD() {
+__LAMBDA_TERM_SET_BOLD() {
     if __LAMBDA_TERM_IS_SET; then
         tput bold
     fi
 }
 
 # Make output underlined.
-__LAMBDA_SET_UNDERLINE() {
+__LAMBDA_TERM_SET_UNDERLINE() {
     if __LAMBDA_TERM_IS_SET; then
         tput smul
     fi
 }
 
 # Make the output blink.
-__LAMBDA_SET_BLINK() {
+__LAMBDA_TERM_SET_BLINK() {
     if __LAMBDA_TERM_IS_SET; then
         tput blink
     fi
 }
 
 # Make the output standout.
-__LAMBDA_SET_STANDOUT() {
+__LAMBDA_TERM_SET_STANDOUT() {
     if __LAMBDA_TERM_IS_SET; then
         tput blink
     fi
 }
 
 # Clear all attributes.
-__LAMBDA_CLEAR_ATTRIBUTES() {
+__LAMBDA_TERM_CLEAR_ATTRIBUTES() {
     if __LAMBDA_TERM_IS_SET; then
         tput sgr0
     fi
 }
 
 # Set the foreground color.
-__LAMBDA_SET_FOREGROUND() {
+__LAMBDA_TERM_SET_FOREGROUND() {
     if __LAMBDA_TERM_IS_SET; then
         tput setaf $1
     fi
 }
 
 # Reset the foreground to it's default.
-__LAMBDA_CLEAR_FOREGROUND() {
+__LAMBDA_TERM_CLEAR_FOREGROUND() {
     if __LAMBDA_TERM_IS_SET; then
         tput setaf $__LAMBDA_COLOR_DEFAULT
     fi
 }
 
 # Set the background color.
-__LAMBDA_SET_BACKGROUND() {
+__LAMBDA_TERM_SET_BACKGROUND() {
     if __LAMBDA_TERM_IS_SET; then
         tput setab $1
     fi
 }
 
 # Clear the background.
-__LAMBDA_CLEAR_BACKGROUND() {
+__LAMBDA_TERM_CLEAR_BACKGROUND() {
     if __LAMBDA_TERM_IS_SET; then
         tput setab $__LAMBDA_COLOR_NOT_USED
     fi
 }
 
 # Clear the entire screen.
-__LAMBDA_CLEAR_SCREEN() {
+__LAMBDA_TERM_CLEAR_SCREEN() {
     if __LAMBDA_TERM_IS_SET; then
         tput clear
     fi
@@ -113,72 +113,78 @@ LAMBDA_TYPE_LIST="list"
 # Log a trace/debug message.
 # Example usage:
 # LAMBDA_TRACE "This is an trace message."j
-LAMBDA_TRACE() {
-    __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_WHITE
-    __LAMBDA_SET_BACKGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_SET_BOLD
+LAMBDA_LOG_TRACE() {
+    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_WHITE
+    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_BLACK
+    __LAMBDA_TERM_SET_BOLD
     printf "[TRACE][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_CLEAR_ATTRIBUTES
+    __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
 }
 
 # Log an info message.
 # Example usage:
 # LAMBDA_WARN "This is an informational message."j
-LAMBDA_INFO() {
-    __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_SET_BACKGROUND $__LAMBDA_COLOR_GREEN
-    __LAMBDA_SET_BOLD
+LAMBDA_LOG_INFO() {
+    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
+    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_GREEN
+    __LAMBDA_TERM_SET_BOLD
     printf "[INFO][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_CLEAR_ATTRIBUTES
+    __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
 }
 
 # Log an error message.
 # Example usage:
 # LAMBDA_WARN "This is a warning message."j
-LAMBDA_WARN() {
-    __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_SET_BACKGROUND $__LAMBDA_COLOR_YELLOW
-    __LAMBDA_SET_BOLD
+LAMBDA_LOG_WARN() {
+    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
+    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_YELLOW
+    __LAMBDA_TERM_SET_BOLD
     printf "[WARN][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_CLEAR_ATTRIBUTES
+    __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
 }
 
 # Log an error message.
 # Example usage:
 # LAMBDA_ERROR "This is an error message."j
-LAMBDA_ERROR() {
-    __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_SET_BACKGROUND $__LAMBDA_COLOR_RED
-    __LAMBDA_SET_BOLD
+LAMBDA_LOG_ERROR() {
+    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
+    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
+    __LAMBDA_TERM_SET_BOLD
     printf "[ERROR][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_CLEAR_ATTRIBUTES
+    __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
 }
 
 # Log a fatal message and quit.
 # Example usage:
-# LAMBDA_FATAL "Couldn't load a file, exiting the script."
-LAMBDA_FATAL() {
-    __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_SET_BACKGROUND $__LAMBDA_COLOR_RED
-    __LAMBDA_SET_BOLD
+# LAMBDA_LOG_FATAL "Couldn't load a file, exiting the script."
+LAMBDA_LOG_FATAL() {
+    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
+    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
+    __LAMBDA_TERM_SET_BOLD
     printf "[FATAL][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_CLEAR_ATTRIBUTES
+    __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
     exit 1
 }
 
 # -------------------------------- ARG PARSING ---------------------------------
 
-export __LAMBDA_REGISTERED_ARG_MAP=()
-export __LAMBDA_ARG_DEFAULT_VALUES=()
-export __LAMBDA_ARG_HELP_STRINGS=()
-export __LAMBDA_ARG_IS_SET=()
-export __LAMBDA_ARG_COUNT=0
+export __LAMBDA_ARGS_REGISTERED_MAP=()
+export __LAMBDA_ARGS_DEFAULT_VALUES=()
+export __LAMBDA_ARGS_HELP_STRINGS=()
+export __LAMBDA_ARGS_IS_SET=()
+export __LAMBDA_ARGS_COUNT=0
 
+
+export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
+export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
+export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
+export __LAMBDA_ARGS_ADD_IS_SET=()
+export __LAMBDA_ARGS_ADD_COUNT=0
 # Parse an argument that you want to use for your script.
 # Example usage looks like:
 # LAMBDA_PARSE_ARG tool sandbox "The tool to compile and run."
@@ -189,36 +195,55 @@ export __LAMBDA_ARG_COUNT=0
 # arrays.
 #
 # ARG_NAME -> The long hand name of the argument.
-# DEFAULT_VALUE -> The default value of argument.
 # HELP_STRING -> The Help string for the argument.
-LAMBDA_PARSE_ARG() {
+# DEFAULT_VALUE -> The default value of argument.
+__LAMBDA_ARGS_PARSE() {
     ARG_NAME="$1"
-    DEFAULT_VALUE="$2"
-    DESCRIPTION="$3"
+    DESCRIPTION="$2"
+    DEFAULT_VALUE="$3"
 
-    ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARG_COUNT}"
-    __LAMBDA_REGISTERED_ARG_MAP+=("$ARG_NAME_TO_INDEX")
-    __LAMBDA_ARG_DEFAULT_VALUES+=("$DEFAULT_VALUE")
-    __LAMBDA_ARG_DESCRIPTIONS+=("$DESCRIPTION")
-    __LAMBDA_ARG_IS_SET+=(0)
-    __LAMBDA_ARG_COUNT=$((1 + __LAMBDA_ARG_COUNT))
+    ARG_NAME_TO_INDEX="${ARG_NAME}:${S}"
+    __LAMBDA_ARGS_ADD_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
+    __LAMBDA_ARGS_ADD_DEFAULT_VALUES+=("$DEFAULT_VALUE")
+    __LAMBDA_ARGS_ADD_help_strings+=("$DESCRIPTION")
+    __LAMBDA_ARGS_ADD_IS_SET+=(0)
+    S=$((1 + S))
 }
 
-__LAMBDA_SHOW_HELP_STRING() {
-  __LAMBDA_SET_FOREGROUND $__LAMBDA_COLOR_GREEN
-  printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
-  __LAMBDA_CLEAR_ATTRIBUTES
+LAMBDA_ARGS_ADD() {
+    LAMBDA_ARGS_PARSE name "The name of the argument."
+    LAMBDA_ARGS_PARSE description "The description of the argument being created"
+    LAMBDA_ARGS_PARSE default "The default value of the argument (If nothing is provided, argument is required.)"
 
-  for ((i=0; i<$__LAMBDA_ARG_COUNT; i++)); do
-    IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_REGISTERED_ARG_MAP[${i}]}"
+    LAMBDA_ARGS_COMPILE "--internal_lambda_args $@"
+
+    ARG_NAME="$LAMBDA_name"
+    DESCRIPTION="$LAMBDA_description"
+    DEFAULT_VALUE="$LAMBDA_default"
+
+    ARG_NAME_TO_INDEX="${ARG_NAME}:${S}"
+    __LAMBDA_ARGS_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
+    __LAMBDA_ARGS_DEFAULT_VALUES+=("$DEFAULT_VALUE")
+    __LAMBDA_ARG_DESCRIPTIONS+=("$DESCRIPTION")
+    __LAMBDA_ARGS_IS_SET+=(0)
+    S=$((1 + S))
+}
+
+__LAMBDA_ARGS_SHOW_HELP_STRING() {
+  __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_GREEN
+  printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
+  __LAMBDA_TERM_CLEAR_ATTRIBUTES
+
+  for ((i=0; i<$S; i++)); do
+    IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_ARGS_REGISTERED_MAP[${i}]}"
 
     ARG_NAME="${ARG_MAP[0]}"
     ARG_INDEX="${ARG_MAP[1]}"
-    ARG_DEFAULT_VALUE="${__LAMBDA_ARG_DEFAULT_VALUES[${ARG_INDEX}]}"
+    ARG_DEFAULT_VALUE="${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}"
     ARG_DESCRIPTION="${__LAMBDA_ARG_DESCRIPTIONS[${ARG_INDEX}]}"
     ARG_REQUIRED="False"
 
-    if [ -z "${__LAMBDA_ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
+    if [ -z "${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
       ARG_REQUIRED="True"
     fi
 
@@ -251,17 +276,29 @@ __LAMBDA_SHOW_HELP_STRING() {
 # repetitive & potentially inefficient behaviour. While this isn't problematic
 # right now, this implementation might not be concrete depending on finding an
 # implementation that works better than using multiple arrays.
-LAMBDA_COMPILE_ARGS() {
+LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
-    __LAMBDA_SHOW_HELP_STRING $0
-    LAMBDA_FATAL "Script execution disabled when using --help"
+    __LAMBDA_ARGS_SHOW_HELP_STRING $0
+    LAMBDA_LOG_FATAL "Script execution disabled when using --help"
+  fi
+
+  alias ARG_MAP=__LAMBDA_ARGS_REGISTERED_MAP
+  alias ARG_SET_LIST=__LAMBDA_ARGS_IS_SET
+  alias ARG_DEFAULT_VALUES=__LAMBDA_ARGS_DEFAULT_VALUES
+  INTERNAL_USE=false
+
+  if [ "$1" = "--internal_lambda_args"]; then
+    alias ARG_MAP=__LAMBDA_ARGS_ADD_REGISTERED_MAP
+    alias ARG_SET_LIST=__LAMBDA_ARGS_IS_SET
+    alias ARG_DEFAULT_VALUES=__LAMBDA_ARGS_DEFAULT_VALUES
+    INTERNAL_USE=true
   fi
 
   # Iterate through the arguments and parse them into variables.
   while (("$#")); do
     FOUND=0
-    for ((i=0; i<$__LAMBDA_ARG_COUNT; i++)); do
-        IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_REGISTERED_ARG_MAP[${i}]}"
+    for ((i=0; i<$S; i++)); do
+        IFS=':' read -ra ARG_MAP <<< "${ARG_MAP[${i}]}"
 
         ARG_NAME="${ARG_MAP[0]}"
         ARG_INDEX="${ARG_MAP[1]}"
@@ -269,12 +306,12 @@ LAMBDA_COMPILE_ARGS() {
         if [ "$1" = "--$ARG_NAME" ]; then
             if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
                 export "LAMBDA_${ARG_NAME//-/_}"="$2"
-                __LAMBDA_ARG_IS_SET[${ARG_INDEX}]=1
+                ARG_SET_LIST[${ARG_INDEX}]=1
                 FOUND=1
                 shift 2
                 break
             else
-                LAMBDA_FATAL "No argument for flag $1"
+                LAMBDA_LOG_FATAL "No argument for flag $1"
             fi
         fi
      done
@@ -283,30 +320,38 @@ LAMBDA_COMPILE_ARGS() {
      # it's not an unsupported flag or a positional argument.
      if [ $FOUND = 0 ]; then
         if [[ "$1" =~ --* ]]; then
-            LAMBDA_FATAL \
+            LAMBDA_LOG_FATAL \
               "Unsupported flag: $1. Run with --help to see the flags."
         else
-            LAMBDA_FATAL "No support for positional arguments."
+            LAMBDA_LOG_FATAL "No support for positional arguments."
         fi
      fi
   done
 
   # Add default values to any argument that wasn't given a value.
-  for ((i=0; i<$__LAMBDA_ARG_COUNT; i++)); do
-    IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_REGISTERED_ARG_MAP[${i}]}"
+  for ((i=0; i<$S; i++)); do
+    IFS=':' read -ra ARG_MAP <<< "${ARG_MAP[${i}]}"
 
     ARG_NAME="${ARG_MAP[0]}"
     ARG_INDEX="${ARG_MAP[1]}"
 
-    if [ "${__LAMBDA_ARG_IS_SET[${ARG_INDEX}]}" = 0 ]; then
-      if [ -z "${__LAMBDA_ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
-        LAMBDA_FATAL \
+    if [ "${ARG_SET_LIST[${ARG_INDEX}]}" = 0 ]; then
+      if [ -z "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
+        LAMBDA_LOG_FATAL \
           "--$ARG_NAME has no default value and therefore cannot be left empty."
       fi
-        DEFAULT_VALUE="${__LAMBDA_ARG_DEFAULT_VALUES[${ARG_INDEX}]}"
+        DEFAULT_VALUE="${ARG_DEFAULT_VALUES[${ARG_INDEX}]}"
         export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
     fi
   done
+
+  if [ $INTERNAL_USE = 1]; then
+    export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
+    export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
+    export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
+    export __LAMBDA_ARGS_ADD_IS_SET=()
+    export __LAMBDA_ARGS_ADD_COUNT=0
+  fi
 }
 
 # -------------------------------- ASSERTIONS ----------------------------------
@@ -315,6 +360,6 @@ LAMBDA_COMPILE_ARGS() {
 # argument that should be the message output if the assertion has failed.
 LAMBDA_ASSERT_LAST_COMMAND_OK() {
     if [ $? -ne 0 ]; then
-        LAMBDA_FATAL "$1"
+        LAMBDA_LOG_FATAL "$1"
     fi
 }
