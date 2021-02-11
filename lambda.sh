@@ -202,31 +202,37 @@ __LAMBDA_ARGS_PARSE() {
     DESCRIPTION="$2"
     DEFAULT_VALUE="$3"
 
-    ARG_NAME_TO_INDEX="${ARG_NAME}:${S}"
+    ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_ADD_COUNT}"
     __LAMBDA_ARGS_ADD_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_ADD_DEFAULT_VALUES+=("$DEFAULT_VALUE")
-    __LAMBDA_ARGS_ADD_help_strings+=("$DESCRIPTION")
+    __LAMBDA_ARGS_ADD_HELP_STRINGS+=("$DESCRIPTION")
     __LAMBDA_ARGS_ADD_IS_SET+=(0)
-    S=$((1 + S))
+    __LAMBDA_ARGS_ADD_COUNT=$((1 + $__LAMBDA_ARGS_ADD_COUNT))
 }
 
 LAMBDA_ARGS_ADD() {
-    LAMBDA_ARGS_PARSE name "The name of the argument."
-    LAMBDA_ARGS_PARSE description "The description of the argument being created"
-    LAMBDA_ARGS_PARSE default "The default value of the argument (If nothing is provided, argument is required.)"
+    __LAMBDA_ARGS_PARSE name "The name of the argument."
+    __LAMBDA_ARGS_PARSE description \
+        "The description of the argument being created"
+    __LAMBDA_ARGS_PARSE default \
+        "The default value of the argument (No value implies it's required)"
 
-    LAMBDA_ARGS_COMPILE "--internal_lambda_args $@"
+    LAMBDA_ARGS_COMPILE "--internal_lambda_args" "$@"
 
     ARG_NAME="$LAMBDA_name"
     DESCRIPTION="$LAMBDA_description"
     DEFAULT_VALUE="$LAMBDA_default"
 
-    ARG_NAME_TO_INDEX="${ARG_NAME}:${S}"
+    ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_COUNT}"
     __LAMBDA_ARGS_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_DEFAULT_VALUES+=("$DEFAULT_VALUE")
     __LAMBDA_ARG_DESCRIPTIONS+=("$DESCRIPTION")
     __LAMBDA_ARGS_IS_SET+=(0)
-    S=$((1 + S))
+    __LAMBDA_ARGS_COUNT=$((1 + $__LAMBDA_ARGS_COUNT))
+
+    unset -v LAMBDA_name
+    unset -v LAMBDA_description
+    unset -v LAMBDA_default
 }
 
 __LAMBDA_ARGS_SHOW_HELP_STRING() {
@@ -282,23 +288,26 @@ LAMBDA_ARGS_COMPILE() {
     LAMBDA_LOG_FATAL "Script execution disabled when using --help"
   fi
 
-  alias ARG_MAP=__LAMBDA_ARGS_REGISTERED_MAP
-  alias ARG_SET_LIST=__LAMBDA_ARGS_IS_SET
-  alias ARG_DEFAULT_VALUES=__LAMBDA_ARGS_DEFAULT_VALUES
-  INTERNAL_USE=false
+  ARGS_REGISTERED=("${__LAMBDA_ARGS_REGISTERED_MAP[@]}")
+  ARG_SET_LIST=("${__LAMBDA_ARGS_IS_SET[@]}")
+  ARG_DEFAULT_VALUES=("${__LAMBDA_ARGS_DEFAULT_VALUES[@]}")
+  ARG_COUNT="${__LAMBDA_ARGS_COUNT}"
+  INTERNAL_USE=0
 
-  if [ "$1" = "--internal_lambda_args"]; then
-    alias ARG_MAP=__LAMBDA_ARGS_ADD_REGISTERED_MAP
-    alias ARG_SET_LIST=__LAMBDA_ARGS_IS_SET
-    alias ARG_DEFAULT_VALUES=__LAMBDA_ARGS_DEFAULT_VALUES
-    INTERNAL_USE=true
+  if [ "$1" = "--internal_lambda_args" ]; then
+    ARGS_REGISTERED=("${__LAMBDA_ARGS_ADD_REGISTERED_MAP[@]}")
+    ARG_SET_LIST=("${__LAMBDA_ARGS_ADD_IS_SET[@]}")
+    ARG_DEFAULT_VALUES=("${__LAMBDA_ARGS_ADD_DEFAULT_VALUES[@]}")
+    ARG_COUNT="${__LAMBDA_ARGS_ADD_COUNT}"
+    INTERNAL_USE=1
+    shift 1
   fi
 
   # Iterate through the arguments and parse them into variables.
   while (("$#")); do
     FOUND=0
-    for ((i=0; i<$S; i++)); do
-        IFS=':' read -ra ARG_MAP <<< "${ARG_MAP[${i}]}"
+    for ((i=0; i<$ARG_COUNT; i++)); do
+        IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
         ARG_NAME="${ARG_MAP[0]}"
         ARG_INDEX="${ARG_MAP[1]}"
@@ -329,8 +338,8 @@ LAMBDA_ARGS_COMPILE() {
   done
 
   # Add default values to any argument that wasn't given a value.
-  for ((i=0; i<$S; i++)); do
-    IFS=':' read -ra ARG_MAP <<< "${ARG_MAP[${i}]}"
+  for ((i=0; i<$ARG_COUNT; i++)); do
+    IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
     ARG_NAME="${ARG_MAP[0]}"
     ARG_INDEX="${ARG_MAP[1]}"
@@ -345,7 +354,7 @@ LAMBDA_ARGS_COMPILE() {
     fi
   done
 
-  if [ $INTERNAL_USE = 1]; then
+  if [ $INTERNAL_USE = 1 ]; then
     export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
     export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
     export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
