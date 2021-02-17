@@ -212,10 +212,17 @@ __LAMBDA_ARGS_PARSE() {
 
 LAMBDA_ARGS_ADD() {
     __LAMBDA_ARGS_PARSE name "The name of the argument."
-    __LAMBDA_ARGS_PARSE description \
-        "The description of the argument being created"
-    __LAMBDA_ARGS_PARSE default \
-        "The default value of the argument (No value implies it's required)"
+
+    __LAMBDA_ARGS_PARSE \
+        description \
+        "The description of the argument being created" \
+        "[WARNING]: Description not set."
+
+    __LAMBDA_ARGS_PARSE \
+        default \
+        "The default value of the argument (No value implies it's required)" \
+        "__LAMBDA_NOT_REQUIRED"
+
 
     LAMBDA_ARGS_COMPILE "--internal_lambda_args" "$@"
 
@@ -233,6 +240,7 @@ LAMBDA_ARGS_ADD() {
     unset -v LAMBDA_name
     unset -v LAMBDA_description
     unset -v LAMBDA_default
+    unset -v LAMBDA_required
 }
 
 __LAMBDA_ARGS_SHOW_HELP_STRING() {
@@ -306,7 +314,7 @@ LAMBDA_ARGS_COMPILE() {
   # Iterate through the arguments and parse them into variables.
   while (("$#")); do
     FOUND=0
-    for ((i=0; i<$ARG_COUNT; i++)); do
+    for ((i=0; i < $ARG_COUNT; i++)); do
         IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
         ARG_NAME="${ARG_MAP[0]}"
@@ -338,7 +346,7 @@ LAMBDA_ARGS_COMPILE() {
   done
 
   # Add default values to any argument that wasn't given a value.
-  for ((i=0; i<$ARG_COUNT; i++)); do
+  for ((i=0; i < $ARG_COUNT; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
     ARG_NAME="${ARG_MAP[0]}"
@@ -348,9 +356,13 @@ LAMBDA_ARGS_COMPILE() {
       if [ -z "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
         LAMBDA_LOG_FATAL \
           "--$ARG_NAME has no default value and therefore cannot be left empty."
-      fi
+      elif [ "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" = "__LAMBDA_ARG_REQUIRED" ]; then
+        DEFAULT_VALUE=""
+        export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
+      else
         DEFAULT_VALUE="${ARG_DEFAULT_VALUES[${ARG_INDEX}]}"
         export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
+      fi
     fi
   done
 

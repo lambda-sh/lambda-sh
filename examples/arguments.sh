@@ -8,7 +8,7 @@ LAMBDA_ARGS_ADD \
 LAMBDA_ARGS_ADD \
     --name "second_arg" --description "The second argument" --default "2"
 
-LAMBDA_ARGS_ADD --description "Do something" --name "required" --default "s"
+LAMBDA_ARGS_ADD --description "Do something" --name "required"
 
 LAMBDA_ARGS_COMPILE "$@"
 
