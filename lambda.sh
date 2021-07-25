@@ -240,7 +240,6 @@ LAMBDA_ARGS_ADD() {
     unset -v LAMBDA_name
     unset -v LAMBDA_description
     unset -v LAMBDA_default
-    unset -v LAMBDA_required
 }
 
 __LAMBDA_ARGS_SHOW_HELP_STRING() {
