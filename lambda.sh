@@ -221,7 +221,7 @@ LAMBDA_ARGS_ADD() {
     __LAMBDA_ARGS_PARSE \
         default \
         "The default value of the argument (No value implies it's required)" \
-        "__LAMBDA_NOT_REQUIRED"
+        "__LAMBDA_ARGS_REQUIRED"
 
 
     LAMBDA_ARGS_COMPILE "--internal_lambda_args" "$@"
@@ -248,17 +248,18 @@ __LAMBDA_ARGS_SHOW_HELP_STRING() {
   printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
   __LAMBDA_TERM_CLEAR_ATTRIBUTES
 
-  for ((i=0; i<$S; i++)); do
+  for ((i=0; i<"$__LAMBDA_ARGS_COUNT"; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_ARGS_REGISTERED_MAP[${i}]}"
 
     ARG_NAME="${ARG_MAP[0]}"
     ARG_INDEX="${ARG_MAP[1]}"
     ARG_DEFAULT_VALUE="${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}"
     ARG_DESCRIPTION="${__LAMBDA_ARG_DESCRIPTIONS[${ARG_INDEX}]}"
-    ARG_REQUIRED="False"
+    ARG_REQUIRED="false"
 
     if [ -z "${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
-      ARG_REQUIRED="True"
+      ARG_REQUIRED="true"
+      ARG_DEFAULT_VALUE=""
     fi
 
     printf "%-20s %-20s %-20s %-20s\n" \
@@ -356,7 +357,7 @@ LAMBDA_ARGS_COMPILE() {
       if [ -z "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
         LAMBDA_LOG_FATAL \
           "--$ARG_NAME has no default value and therefore cannot be left empty."
-      elif [ "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" = "__LAMBDA_ARG_REQUIRED" ]; then
+      elif [ "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" = "__LAMBDA_ARGS_REQUIRED" ]; then
         DEFAULT_VALUE=""
         export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
       else
@@ -372,6 +373,12 @@ LAMBDA_ARGS_COMPILE() {
     export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
     export __LAMBDA_ARGS_ADD_IS_SET=()
     export __LAMBDA_ARGS_ADD_COUNT=0
+  else
+    export __LAMBDA_ARGS_REGISTERED_MAP=()
+    export __LAMBDA_ARGS_DEFAULT_VALUES=()
+    export __LAMBDA_ARGS_HELP_STRINGS=()
+    export __LAMBDA_ARGS_IS_SET=()
+    export __LAMBDA_ARGS_COUNT=0
   fi
 }
 
