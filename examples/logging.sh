@@ -9,4 +9,4 @@ LAMBDA_LOG_TRACE "This is a trace."
 LAMBDA_LOG_ERROR "This is an error."
 LAMBDA_LOG_FATAL "This is a fatal message."
 
-popd  # ROOT_DIR
+popd  # $ROOT_DIR
