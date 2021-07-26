@@ -12,8 +12,8 @@ LAMBDA_ARGS_ADD --description "Do something" --name "required"
 
 LAMBDA_ARGS_COMPILE "$@"
 
-LAMBDA_LOG_INFO "$LAMBDA_first_arg"
-LAMBDA_LOG_INFO "$LAMBDA_second_arg"
-LAMBDA_LOG_INFO "$LAMBDA_required"
+lambda_log_info "$LAMBDA_first_arg"
+lambda_log_info "$LAMBDA_second_arg"
+lambda_log_info "$LAMBDA_required"
 
 popd > /dev/null # $ROOT_DIR

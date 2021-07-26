@@ -1,12 +1,12 @@
 ROOT_DIR=$(git rev-parse --show-toplevel)
-pushd "$ROOT_DIR"
+pushd "$ROOT_DIR" > /dev/null
 
 source "$ROOT_DIR/lambda.sh"
 
-LAMBDA_LOG_INFO "This is an info message."
-LAMBDA_LOG_WARN "This is a warning."
-LAMBDA_LOG_TRACE "This is a trace."
-LAMBDA_LOG_ERROR "This is an error."
-LAMBDA_LOG_FATAL "This is a fatal message."
+lambda_log_trace "This is a trace."
+lambda_log_info "This is an info message."
+lambda_log_warn "This is a warning."
+lambda_log_error "This is an error."
+lambda_log_fatal "This is a fatal message."
 
-popd  # $ROOT_DIR
+popd  > /dev/null # $ROOT_DIR
