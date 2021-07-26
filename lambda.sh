@@ -207,7 +207,7 @@ export __LAMBDA_ARGS_CACHED=()
 # ARG_NAME -> The long hand name of the argument.
 # HELP_STRING -> The Help string for the argument.
 # DEFAULT_VALUE -> The default value of argument.
-__LAMBDA_ARGS_PARSE() {
+__lambda_args_parse() {
     ARG_NAME="$1"
     DESCRIPTION="$2"
     DEFAULT_VALUE="$3"
@@ -221,14 +221,14 @@ __LAMBDA_ARGS_PARSE() {
 }
 
 LAMBDA_ARGS_ADD() {
-    __LAMBDA_ARGS_PARSE name "The name of the argument."
+    __lambda_args_parse name "The name of the argument."
 
-    __LAMBDA_ARGS_PARSE \
+    __lambda_args_parse \
         description \
         "The description of the argument being created" \
         "[WARNING]: Description not set."
 
-    __LAMBDA_ARGS_PARSE \
+    __lambda_args_parse \
         default \
         "The default value of the argument (No value implies it's required)" \
         "__LAMBDA_ARGS_REQUIRED"
@@ -281,6 +281,7 @@ __LAMBDA_ARGS_SHOW_HELP_STRING() {
   printf "\n"
 }
 
+# Internal function for resetting arg meta information.
 __lambda_args_reset() {
   local INTERNAL_USE="$1"
   if [ "$INTERNAL_USE" = 1 ]; then
