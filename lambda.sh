@@ -325,7 +325,7 @@ lambda_args_cleanup() {
 # implementation that works better than using multiple arrays.
 LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
-    __LAMBDA_ARGS_SHOW_HELP_STRING $0
+    __LAMBDA_ARGS_SHOW_HELP_STRING "$0"
     lambda_log_fatal "Script execution disabled when using --help"
     __lambda_args_reset 0
     return 1
@@ -352,8 +352,8 @@ LAMBDA_ARGS_COMPILE() {
     for ((i=0; i < $ARG_COUNT; i++)); do
         IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
-        ARG_NAME="${ARG_MAP[0]}"
-        ARG_INDEX="${ARG_MAP[1]}"
+        local ARG_NAME="${ARG_MAP[0]}"
+        local ARG_INDEX="${ARG_MAP[1]}"
 
         if [ "$1" = "--$ARG_NAME" ]; then
             if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
@@ -370,7 +370,7 @@ LAMBDA_ARGS_COMPILE() {
 
      # If the argument cannot be found, let the user know that
      # it's not an unsupported flag or a positional argument.
-     if [ $FOUND = 0 ]; then
+     if [ "$FOUND" = 0 ]; then
         if [[ "$1" =~ --* ]]; then
             lambda_log_fatal \
               "Unsupported flag: $1. Run with --help to see the flags."
@@ -381,7 +381,7 @@ LAMBDA_ARGS_COMPILE() {
   done
 
   # Add default values to any argument that wasn't given a value.
-  for ((i=0; i < $ARG_COUNT; i++)); do
+  for ((i=0; i < "$ARG_COUNT"; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
     local ARG_NAME="${ARG_MAP[0]}"
