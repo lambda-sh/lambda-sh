@@ -190,6 +190,11 @@ export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
 export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
 export __LAMBDA_ARGS_ADD_IS_SET=()
 export __LAMBDA_ARGS_ADD_COUNT=0
+
+# Cached variables that is used to clean up variables after they've been 
+# instantiated.
+export __LAMBDA_ARGS_CACHED=()
+
 # Parse an argument that you want to use for your script.
 # Example usage looks like:
 # LAMBDA_PARSE_ARG tool sandbox "The tool to compile and run."
@@ -231,11 +236,11 @@ LAMBDA_ARGS_ADD() {
 
     LAMBDA_ARGS_COMPILE "--internal_lambda_args" "$@"
 
-    ARG_NAME="$LAMBDA_name"
-    DESCRIPTION="$LAMBDA_description"
-    DEFAULT_VALUE="$LAMBDA_default"
+    local ARG_NAME="$LAMBDA_name"
+    local DESCRIPTION="$LAMBDA_description"
+    local DEFAULT_VALUE="$LAMBDA_default"
 
-    ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_COUNT}"
+    local ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_COUNT}"
     __LAMBDA_ARGS_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_DEFAULT_VALUES+=("$DEFAULT_VALUE")
     __LAMBDA_ARG_DESCRIPTIONS+=("$DESCRIPTION")
@@ -276,6 +281,29 @@ __LAMBDA_ARGS_SHOW_HELP_STRING() {
   printf "\n"
 }
 
+__lambda_args_reset() {
+  local INTERNAL_USE="$1"
+  if [ "$INTERNAL_USE" = 1 ]; then
+    export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
+    export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
+    export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
+    export __LAMBDA_ARGS_ADD_IS_SET=()
+    export __LAMBDA_ARGS_ADD_COUNT=0
+  else
+    export __LAMBDA_ARGS_REGISTERED_MAP=()
+    export __LAMBDA_ARGS_DEFAULT_VALUES=()
+    export __LAMBDA_ARGS_HELP_STRINGS=()
+    export __LAMBDA_ARGS_IS_SET=()
+    export __LAMBDA_ARGS_COUNT=0
+  fi
+}
+
+lambda_args_cleanup() {
+    for value in "${__LAMBDA_ARGS_CACHED[@]}"; do
+        unset -v "$value"
+    done
+}
+
 # Compile a list of arguments that are created from LAMBDA_PARSE_ARG calls.
 # Example usage:
 #
@@ -299,14 +327,15 @@ LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
     __LAMBDA_ARGS_SHOW_HELP_STRING $0
     LAMBDA_LOG_FATAL "Script execution disabled when using --help"
+    __lambda_args_reset 0
     return 1
   fi
 
-  ARGS_REGISTERED=("${__LAMBDA_ARGS_REGISTERED_MAP[@]}")
-  ARG_SET_LIST=("${__LAMBDA_ARGS_IS_SET[@]}")
-  ARG_DEFAULT_VALUES=("${__LAMBDA_ARGS_DEFAULT_VALUES[@]}")
-  ARG_COUNT="${__LAMBDA_ARGS_COUNT}"
-  INTERNAL_USE=0
+  local ARGS_REGISTERED=("${__LAMBDA_ARGS_REGISTERED_MAP[@]}")
+  local ARG_SET_LIST=("${__LAMBDA_ARGS_IS_SET[@]}")
+  local ARG_DEFAULT_VALUES=("${__LAMBDA_ARGS_DEFAULT_VALUES[@]}")
+  local ARG_COUNT="${__LAMBDA_ARGS_COUNT}"
+  local INTERNAL_USE=0
 
   if [ "$1" = "--internal_lambda_args" ]; then
     ARGS_REGISTERED=("${__LAMBDA_ARGS_ADD_REGISTERED_MAP[@]}")
@@ -319,7 +348,7 @@ LAMBDA_ARGS_COMPILE() {
 
   # Iterate through the arguments and parse them into variables.
   while (("$#")); do
-    FOUND=0
+    local FOUND=0
     for ((i=0; i < $ARG_COUNT; i++)); do
         IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
@@ -355,36 +384,26 @@ LAMBDA_ARGS_COMPILE() {
   for ((i=0; i < $ARG_COUNT; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${ARGS_REGISTERED[${i}]}"
 
-    ARG_NAME="${ARG_MAP[0]}"
-    ARG_INDEX="${ARG_MAP[1]}"
+    local ARG_NAME="${ARG_MAP[0]}"
+    local ARG_INDEX="${ARG_MAP[1]}"
 
     if [ "${ARG_SET_LIST[${ARG_INDEX}]}" = 0 ]; then
       if [ -z "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
         LAMBDA_LOG_FATAL \
           "--$ARG_NAME has no default value and therefore cannot be left empty."
       elif [ "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" = "__LAMBDA_ARGS_REQUIRED" ]; then
-        DEFAULT_VALUE=""
+        local DEFAULT_VALUE=""
+        __LAMBDA_ARGS_CACHED+=("LAMBDA_${ARG_NAME//-/_}")
         export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
       else
         DEFAULT_VALUE="${ARG_DEFAULT_VALUES[${ARG_INDEX}]}"
+        __LAMBDA_ARGS_CACHED+=("LAMBDA_${ARG_NAME//-/_}")
         export "LAMBDA_${ARG_NAME//-/_}"="$DEFAULT_VALUE"
       fi
     fi
   done
 
-  if [ $INTERNAL_USE = 1 ]; then
-    export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
-    export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
-    export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
-    export __LAMBDA_ARGS_ADD_IS_SET=()
-    export __LAMBDA_ARGS_ADD_COUNT=0
-  else
-    export __LAMBDA_ARGS_REGISTERED_MAP=()
-    export __LAMBDA_ARGS_DEFAULT_VALUES=()
-    export __LAMBDA_ARGS_HELP_STRINGS=()
-    export __LAMBDA_ARGS_IS_SET=()
-    export __LAMBDA_ARGS_COUNT=0
-  fi
+  __lambda_args_reset "$INTERNAL_USE"
 }
 
 # -------------------------------- ASSERTIONS ----------------------------------
