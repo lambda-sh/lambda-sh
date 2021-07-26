@@ -113,7 +113,7 @@ LAMBDA_TYPE_LIST="list"
 # Log a trace/debug message.
 # Example usage:
 # LAMBDA_TRACE "This is an trace message."j
-LAMBDA_LOG_TRACE() {
+lambda_log_trace() {
     __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_WHITE
     __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_BLACK
     __LAMBDA_TERM_SET_BOLD
@@ -125,7 +125,7 @@ LAMBDA_LOG_TRACE() {
 # Log an info message.
 # Example usage:
 # LAMBDA_WARN "This is an informational message."j
-LAMBDA_LOG_INFO() {
+lambda_log_info() {
     __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
     __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_GREEN
     __LAMBDA_TERM_SET_BOLD
@@ -137,7 +137,7 @@ LAMBDA_LOG_INFO() {
 # Log an error message.
 # Example usage:
 # LAMBDA_WARN "This is a warning message."j
-LAMBDA_LOG_WARN() {
+lambda_log_warn() {
     __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
     __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_YELLOW
     __LAMBDA_TERM_SET_BOLD
@@ -149,7 +149,7 @@ LAMBDA_LOG_WARN() {
 # Log an error message.
 # Example usage:
 # LAMBDA_ERROR "This is an error message."j
-LAMBDA_LOG_ERROR() {
+lambda_log_error() {
     __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
     __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
     __LAMBDA_TERM_SET_BOLD
@@ -160,8 +160,8 @@ LAMBDA_LOG_ERROR() {
 
 # Log a fatal message and quit.
 # Example usage:
-# LAMBDA_LOG_FATAL "Couldn't load a file, exiting the script."
-LAMBDA_LOG_FATAL() {
+# lambda_log_fatal "Couldn't load a file, exiting the script."
+lambda_log_fatal() {
     __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
     __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
     __LAMBDA_TERM_SET_BOLD
@@ -326,7 +326,7 @@ lambda_args_cleanup() {
 LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
     __LAMBDA_ARGS_SHOW_HELP_STRING $0
-    LAMBDA_LOG_FATAL "Script execution disabled when using --help"
+    lambda_log_fatal "Script execution disabled when using --help"
     __lambda_args_reset 0
     return 1
   fi
@@ -363,7 +363,7 @@ LAMBDA_ARGS_COMPILE() {
                 shift 2
                 break
             else
-                LAMBDA_LOG_FATAL "No argument for flag $1"
+                lambda_log_fatal "No argument for flag $1"
             fi
         fi
      done
@@ -372,10 +372,10 @@ LAMBDA_ARGS_COMPILE() {
      # it's not an unsupported flag or a positional argument.
      if [ $FOUND = 0 ]; then
         if [[ "$1" =~ --* ]]; then
-            LAMBDA_LOG_FATAL \
+            lambda_log_fatal \
               "Unsupported flag: $1. Run with --help to see the flags."
         else
-            LAMBDA_LOG_FATAL "No support for positional arguments."
+            lambda_log_fatal "No support for positional arguments."
         fi
      fi
   done
@@ -389,7 +389,7 @@ LAMBDA_ARGS_COMPILE() {
 
     if [ "${ARG_SET_LIST[${ARG_INDEX}]}" = 0 ]; then
       if [ -z "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
-        LAMBDA_LOG_FATAL \
+        lambda_log_fatal \
           "--$ARG_NAME has no default value and therefore cannot be left empty."
       elif [ "${ARG_DEFAULT_VALUES[${ARG_INDEX}]}" = "__LAMBDA_ARGS_REQUIRED" ]; then
         local DEFAULT_VALUE=""
@@ -412,6 +412,6 @@ LAMBDA_ARGS_COMPILE() {
 # argument that should be the message output if the assertion has failed.
 LAMBDA_ASSERT_LAST_COMMAND_OK() {
     if [ $? -ne 0 ]; then
-        LAMBDA_LOG_FATAL "$1"
+        lambda_log_fatal "$1"
     fi
 }
