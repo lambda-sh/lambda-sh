@@ -293,7 +293,8 @@ __LAMBDA_ARGS_SHOW_HELP_STRING() {
 LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
     __LAMBDA_ARGS_SHOW_HELP_STRING $0
-    LAMBDA_LOG_FATAL "Script execution disabled when using --help"
+    LAMBDA_LOG_WARN "Script execution disabled when using --help"
+    exit 0
   fi
 
   ARGS_REGISTERED=("${__LAMBDA_ARGS_REGISTERED_MAP[@]}")
