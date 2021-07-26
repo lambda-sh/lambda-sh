@@ -168,7 +168,12 @@ LAMBDA_LOG_FATAL() {
     printf "[FATAL][%s][%s]:" $(date +"%F") $(date +"%T")
     __LAMBDA_TERM_CLEAR_ATTRIBUTES
     printf " $1\n"
-    exit 1
+
+    if [ "$0" = "-bash" ]; then
+        return 1
+    else
+        exit 1
+    fi
 }
 
 # -------------------------------- ARG PARSING ---------------------------------
@@ -293,8 +298,7 @@ __LAMBDA_ARGS_SHOW_HELP_STRING() {
 LAMBDA_ARGS_COMPILE() {
   if [ "$1" = "--help" ]; then
     __LAMBDA_ARGS_SHOW_HELP_STRING $0
-    LAMBDA_LOG_WARN "Script execution disabled when using --help"
-    exit 0
+    LAMBDA_LOG_FATAL "Script execution disabled when using --help"
   fi
 
   ARGS_REGISTERED=("${__LAMBDA_ARGS_REGISTERED_MAP[@]}")
