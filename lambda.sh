@@ -180,14 +180,14 @@ lambda_log_fatal() {
 
 export __LAMBDA_ARGS_REGISTERED_MAP=()
 export __LAMBDA_ARGS_DEFAULT_VALUES=()
-export __LAMBDA_ARGS_HELP_STRINGS=()
+export __LAMBDA_ARGS_DESCRIPTIONS=()
 export __LAMBDA_ARGS_IS_SET=()
 export __LAMBDA_ARGS_COUNT=0
 
 
 export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
 export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
-export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
+export __LAMBDA_ARGS_ADD_DESCRIPTIONS=()
 export __LAMBDA_ARGS_ADD_IS_SET=()
 export __LAMBDA_ARGS_ADD_COUNT=0
 
@@ -205,7 +205,7 @@ export __LAMBDA_ARGS_CACHED=()
 # arrays.
 #
 # ARG_NAME -> The long hand name of the argument.
-# HELP_STRING -> The Help string for the argument.
+# DESCRIPTION -> The Help string for the argument.
 # DEFAULT_VALUE -> The default value of argument.
 __lambda_args_parse() {
     local ARG_NAME="$1"
@@ -215,7 +215,7 @@ __lambda_args_parse() {
     local ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_ADD_COUNT}"
     __LAMBDA_ARGS_ADD_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_ADD_DEFAULT_VALUES+=("$DEFAULT_VALUE")
-    __LAMBDA_ARGS_ADD_HELP_STRINGS+=("$DESCRIPTION")
+    __LAMBDA_ARGS_ADD_DESCRIPTIONS+=("$DESCRIPTION")
     __LAMBDA_ARGS_ADD_IS_SET+=(0)
     __LAMBDA_ARGS_ADD_COUNT=$((1 + $__LAMBDA_ARGS_ADD_COUNT))
 }
@@ -243,7 +243,7 @@ lambda_args_add() {
     local ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_COUNT}"
     __LAMBDA_ARGS_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_DEFAULT_VALUES+=("$DEFAULT_VALUE")
-    __LAMBDA_ARG_DESCRIPTIONS+=("$DESCRIPTION")
+    __LAMBDA_ARGS_DESCRIPTIONS+=("$DESCRIPTION")
     __LAMBDA_ARGS_IS_SET+=(0)
     __LAMBDA_ARGS_COUNT=$((1 + $__LAMBDA_ARGS_COUNT))
 
@@ -257,13 +257,14 @@ __lambda_args_show_help_string() {
   printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
   __lambda_term_clear_attributes
 
+
   for ((i=0; i<"$__LAMBDA_ARGS_COUNT"; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_ARGS_REGISTERED_MAP[${i}]}"
 
     local ARG_NAME="${ARG_MAP[0]}"
     local ARG_INDEX="${ARG_MAP[1]}"
     local ARG_DEFAULT_VALUE="${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}"
-    local ARG_DESCRIPTION="${__LAMBDA_ARG_DESCRIPTIONS[${ARG_INDEX}]}"
+    local ARG_DESCRIPTION="${__LAMBDA_ARGS_DESCRIPTIONS[${ARG_INDEX}]}"
     local ARG_REQUIRED="false"
 
     if [ -z "${__LAMBDA_ARGS_DEFAULT_VALUES[${ARG_INDEX}]}" ]; then
@@ -287,13 +288,13 @@ __lambda_args_reset() {
   if [ "$INTERNAL_USE" = 1 ]; then
     export __LAMBDA_ARGS_ADD_REGISTERED_MAP=()
     export __LAMBDA_ARGS_ADD_DEFAULT_VALUES=()
-    export __LAMBDA_ARGS_ADD_HELP_STRINGS=()
+    export __LAMBDA_ARGS_ADD_DESCRIPTIONS=()
     export __LAMBDA_ARGS_ADD_IS_SET=()
     export __LAMBDA_ARGS_ADD_COUNT=0
   else
     export __LAMBDA_ARGS_REGISTERED_MAP=()
     export __LAMBDA_ARGS_DEFAULT_VALUES=()
-    export __LAMBDA_ARGS_HELP_STRINGS=()
+    export __LAMBDA_ARGS_DESCRIPTIONS=()
     export __LAMBDA_ARGS_IS_SET=()
     export __LAMBDA_ARGS_COUNT=0
   fi
