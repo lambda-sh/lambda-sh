@@ -208,11 +208,11 @@ export __LAMBDA_ARGS_CACHED=()
 # HELP_STRING -> The Help string for the argument.
 # DEFAULT_VALUE -> The default value of argument.
 __lambda_args_parse() {
-    ARG_NAME="$1"
-    DESCRIPTION="$2"
-    DEFAULT_VALUE="$3"
+    local ARG_NAME="$1"
+    local DESCRIPTION="$2"
+    local DEFAULT_VALUE="$3"
 
-    ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_ADD_COUNT}"
+    local ARG_NAME_TO_INDEX="${ARG_NAME}:${__LAMBDA_ARGS_ADD_COUNT}"
     __LAMBDA_ARGS_ADD_REGISTERED_MAP+=("$ARG_NAME_TO_INDEX")
     __LAMBDA_ARGS_ADD_DEFAULT_VALUES+=("$DEFAULT_VALUE")
     __LAMBDA_ARGS_ADD_HELP_STRINGS+=("$DESCRIPTION")
@@ -220,7 +220,7 @@ __lambda_args_parse() {
     __LAMBDA_ARGS_ADD_COUNT=$((1 + $__LAMBDA_ARGS_ADD_COUNT))
 }
 
-LAMBDA_ARGS_ADD() {
+lambda_args_add() {
     __lambda_args_parse name "The name of the argument."
 
     __lambda_args_parse \
@@ -234,7 +234,7 @@ LAMBDA_ARGS_ADD() {
         "__LAMBDA_ARGS_REQUIRED"
 
 
-    LAMBDA_ARGS_COMPILE "--internal_lambda_args" "$@"
+    lambda_args_compile "--internal_lambda_args" "$@"
 
     local ARG_NAME="$LAMBDA_name"
     local DESCRIPTION="$LAMBDA_description"
@@ -252,7 +252,7 @@ LAMBDA_ARGS_ADD() {
     unset -v LAMBDA_default
 }
 
-__LAMBDA_ARGS_SHOW_HELP_STRING() {
+__lambda_args_show_help_string() {
   __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_GREEN
   printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
   __LAMBDA_TERM_CLEAR_ATTRIBUTES
@@ -324,9 +324,9 @@ lambda_args_cleanup() {
 # repetitive & potentially inefficient behaviour. While this isn't problematic
 # right now, this implementation might not be concrete depending on finding an
 # implementation that works better than using multiple arrays.
-LAMBDA_ARGS_COMPILE() {
+lambda_args_compile() {
   if [ "$1" = "--help" ]; then
-    __LAMBDA_ARGS_SHOW_HELP_STRING "$0"
+    __lambda_args_show_help_string "$0"
     lambda_log_fatal "Script execution disabled when using --help"
     __lambda_args_reset 0
     return 1
