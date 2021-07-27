@@ -300,8 +300,8 @@ __lambda_args_reset() {
 }
 
 lambda_args_cleanup() {
-    for value in "${__LAMBDA_ARGS_CACHED[@]}"; do
-        unset -v "$value"
+    for ARG_NAME in "${__LAMBDA_ARGS_CACHED[@]}"; do
+        unset -v "$ARG_NAME"
     done
 }
 
