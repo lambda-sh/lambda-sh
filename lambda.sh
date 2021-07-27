@@ -24,7 +24,7 @@ __LAMBDA_COLOR_NOT_USED=8
 __LAMBDA_COLOR_DEFAULT=9
 
 # Checks if the term variable is set.
-__LAMBDA_TERM_IS_SET() {
+__lambda_term_is_set() {
     if [[ -z ${TERM} ]]; then
         return 1
     else
@@ -33,71 +33,71 @@ __LAMBDA_TERM_IS_SET() {
 }
 
 # Make output bold.
-__LAMBDA_TERM_SET_BOLD() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_bold() {
+    if __lambda_term_is_set; then
         tput bold
     fi
 }
 
 # Make output underlined.
-__LAMBDA_TERM_SET_UNDERLINE() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_underline() {
+    if __lambda_term_is_set; then
         tput smul
     fi
 }
 
 # Make the output blink.
-__LAMBDA_TERM_SET_BLINK() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_blink() {
+    if __lambda_term_is_set; then
         tput blink
     fi
 }
 
 # Make the output standout.
-__LAMBDA_TERM_SET_STANDOUT() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_standout() {
+    if __lambda_term_is_set; then
         tput blink
     fi
 }
 
 # Clear all attributes.
-__LAMBDA_TERM_CLEAR_ATTRIBUTES() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_clear_attributes() {
+    if __lambda_term_is_set; then
         tput sgr0
     fi
 }
 
 # Set the foreground color.
-__LAMBDA_TERM_SET_FOREGROUND() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_foreground() {
+    if __lambda_term_is_set; then
         tput setaf $1
     fi
 }
 
 # Reset the foreground to it's default.
-__LAMBDA_TERM_CLEAR_FOREGROUND() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_clear_foreground() {
+    if __lambda_term_is_set; then
         tput setaf $__LAMBDA_COLOR_DEFAULT
     fi
 }
 
 # Set the background color.
-__LAMBDA_TERM_SET_BACKGROUND() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_set_background() {
+    if __lambda_term_is_set; then
         tput setab $1
     fi
 }
 
 # Clear the background.
-__LAMBDA_TERM_CLEAR_BACKGROUND() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_clear_background() {
+    if __lambda_term_is_set; then
         tput setab $__LAMBDA_COLOR_NOT_USED
     fi
 }
 
 # Clear the entire screen.
-__LAMBDA_TERM_CLEAR_SCREEN() {
-    if __LAMBDA_TERM_IS_SET; then
+__lambda_term_clear_screen() {
+    if __lambda_term_is_set; then
         tput clear
     fi
 }
@@ -114,11 +114,11 @@ LAMBDA_TYPE_LIST="list"
 # Example usage:
 # LAMBDA_TRACE "This is an trace message."j
 lambda_log_trace() {
-    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_WHITE
-    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_TERM_SET_BOLD
+    __lambda_term_set_foreground $__LAMBDA_COLOR_WHITE
+    __lambda_term_set_background $__LAMBDA_COLOR_BLACK
+    __lambda_term_set_bold
     printf "[TRACE][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_TERM_CLEAR_ATTRIBUTES
+    __lambda_term_clear_attributes
     printf " $1\n"
 }
 
@@ -126,11 +126,11 @@ lambda_log_trace() {
 # Example usage:
 # LAMBDA_WARN "This is an informational message."j
 lambda_log_info() {
-    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_GREEN
-    __LAMBDA_TERM_SET_BOLD
+    __lambda_term_set_foreground $__LAMBDA_COLOR_BLACK
+    __lambda_term_set_background $__LAMBDA_COLOR_GREEN
+    __lambda_term_set_bold
     printf "[INFO][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_TERM_CLEAR_ATTRIBUTES
+    __lambda_term_clear_attributes
     printf " $1\n"
 }
 
@@ -138,11 +138,11 @@ lambda_log_info() {
 # Example usage:
 # LAMBDA_WARN "This is a warning message."j
 lambda_log_warn() {
-    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_YELLOW
-    __LAMBDA_TERM_SET_BOLD
+    __lambda_term_set_foreground $__LAMBDA_COLOR_BLACK
+    __lambda_term_set_background $__LAMBDA_COLOR_YELLOW
+    __lambda_term_set_bold
     printf "[WARN][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_TERM_CLEAR_ATTRIBUTES
+    __lambda_term_clear_attributes
     printf " $1\n"
 }
 
@@ -150,11 +150,11 @@ lambda_log_warn() {
 # Example usage:
 # LAMBDA_ERROR "This is an error message."j
 lambda_log_error() {
-    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
-    __LAMBDA_TERM_SET_BOLD
+    __lambda_term_set_foreground $__LAMBDA_COLOR_BLACK
+    __lambda_term_set_background $__LAMBDA_COLOR_RED
+    __lambda_term_set_bold
     printf "[ERROR][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_TERM_CLEAR_ATTRIBUTES
+    __lambda_term_clear_attributes
     printf " $1\n"
 }
 
@@ -162,11 +162,11 @@ lambda_log_error() {
 # Example usage:
 # lambda_log_fatal "Couldn't load a file, exiting the script."
 lambda_log_fatal() {
-    __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_BLACK
-    __LAMBDA_TERM_SET_BACKGROUND $__LAMBDA_COLOR_RED
-    __LAMBDA_TERM_SET_BOLD
+    __lambda_term_set_foreground $__LAMBDA_COLOR_BLACK
+    __lambda_term_set_background $__LAMBDA_COLOR_RED
+    __lambda_term_set_bold
     printf "[FATAL][%s][%s]:" $(date +"%F") $(date +"%T")
-    __LAMBDA_TERM_CLEAR_ATTRIBUTES
+    __lambda_term_clear_attributes
     printf " $1\n"
 
     if [ "$0" = "-bash" ]; then
@@ -253,9 +253,9 @@ lambda_args_add() {
 }
 
 __lambda_args_show_help_string() {
-  __LAMBDA_TERM_SET_FOREGROUND $__LAMBDA_COLOR_GREEN
+  __lambda_term_set_foreground $__LAMBDA_COLOR_GREEN
   printf "\n%-20s %-20s %-20s %-20s\n" "Arg" "Default value" "Required" "Description"
-  __LAMBDA_TERM_CLEAR_ATTRIBUTES
+  __lambda_term_clear_attributes
 
   for ((i=0; i<"$__LAMBDA_ARGS_COUNT"; i++)); do
     IFS=':' read -ra ARG_MAP <<< "${__LAMBDA_ARGS_REGISTERED_MAP[${i}]}"
