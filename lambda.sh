@@ -412,7 +412,7 @@ lambda_args_compile() {
 
 # Asserts whether or not the last ran command has succeeded. Expects one 
 # argument that should be the message output if the assertion has failed.
-LAMBDA_ASSERT_LAST_COMMAND_OK() {
+lambda_assert_last_command_ok() {
     if [ $? -ne 0 ]; then
         lambda_log_fatal "$1"
     fi
